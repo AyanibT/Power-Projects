@@ -1,0 +1,40 @@
+Table_no,Sub_Group,Group,Category,Line_wt,Color
+4,Hydro (Less than 1MW),SL,Survey License,3,#73B2FF
+13,Hydro (More than 1MW),SL,Survey License,4,#005CE6
+14,Thermal,SL,Survey License,1,#FFFFFF
+15,Solar,SL,Survey License,3,#BED2FF
+16,Wind,SL,Survey License,3,#004C73
+17,Biomass,SL,Survey License,1,#FFFFFF
+18,Co-generation,SL,Survey License,3,#6699CD
+60,Technical Clearance (Hydro),SL,Survey License,4,#004DA8
+65,Technical Clearance (Wind),SL,Survey License,2,#9EADD7
+21,Hydro (Less than 1MW),CL,Construction License,3,#A3FF73
+66,Hydro (More than 1MW),CL,Construction License,4,#4CE600
+22,Thermal,CL,Construction License,1,#FFFFFF
+23,Solar,CL,Construction License,3,#AAE100
+24,Wind,CL,Construction License,1,#FFFFFF
+25,Biomass,CL,Construction License,1,#FFFFFF
+26,Co-generation,CL,Construction License,3,#70A800
+6,Hydro (Less than 1MW),ApSL,Application for Survey License,2,#BEFFBF
+30,Hydro (More than 1MW),ApSL,Application for Survey License,4,#00FFA6
+31,Thermal,ApSL,Application for Survey License,1,#FFFFFF
+32,Solar,ApSL,Application for Survey License,3,#00A896
+33,Wind,ApSL,Application for Survey License,1,#FFFFFF
+34,Biomass,ApSL,Application for Survey License,1,#FFFFFF
+35,Co-generation,ApSL,Application for Survey License,1,#FFFFFF
+41,Hydro,ApCL,Application for Construction License,4,#E6E600
+42,Thermal,ApCL,Application for Construction License,1,#FFFFFF
+43,Solar,ApCL,Application for Construction License,3,#FFAA00
+44,Wind,ApCL,Application for Construction License,1,#FFFFFF
+45,Biomass,ApCL,Application for Construction License,1,#FFFFFF
+46,Co-generation,ApCL,Application for Construction License,1,#FFFFFF
+53,Hydro (Less than 1MW),PP,Power Plants,3,#FF7F7F
+54,Hydro (More than 1MW),PP,Power Plants,4,#FF0000
+55,Thermal,PP,Power Plants,5,#A80000
+56,Solar,PP,Power Plants,3,#F00069
+57,Wind,PP,Power Plants,1,#FFFFFF
+58,Biomass,PP,Power Plants,1,#FFFFFF
+59,Co-generation,PP,Power Plants,2,#F57A7A
+49,Studied Projects,GoN,GON Project Bank,4,#A900E6
+48,License Cancelled Projects,GoN,GON Project Bank,2,#C500E1
+69,Under Study Projects,GoN,GON Project Bank,3,#DF73E1
