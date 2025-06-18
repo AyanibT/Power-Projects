@@ -36,5 +36,8 @@ Table_no,Sub_Group,Group,Category,Line_wt,Color
 58,Biomass,PP,Power Plants,1,#FFFFFF
 59,Co-generation,PP,Power Plants,2,#F57A7A
 49,Studied Projects,GoN,GON Project Bank,4,#A900E6
-48,License Cancelled Projects,GoN,GON Project Bank,2,#C500E1
 69,Under Study Projects,GoN,GON Project Bank,3,#DF73E1
+80,Generation License Cancelled Projects,LC,License Cancelled Projects,2,#C500E1
+81,Generation Application Cancelled Projects,LC,License Cancelled Projects,2,#C500E1
+82,Survey License Cancelled Projects,LC,License Cancelled Projects,2,#C500E1
+83,40 m Criteria,LC,License Cancelled Projects,2,#C500E1
