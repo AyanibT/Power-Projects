@@ -167,7 +167,7 @@ footer_html = '''
     border-radius: 5px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 999;">
-    Updated: Jun 20, 2025<br>
+    Updated: Jun 27, 2025<br>
     Made by: <a href="https://www.linkedin.com/in/binaya-basnet" target="_blank" style="color: #0073b1; text-decoration: none;">
         Er. Binaya Basnet
     </a>
