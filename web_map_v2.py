@@ -207,6 +207,79 @@ favicon_html = """
 """
 m.get_root().header.add_child(folium.Element(favicon_html))
 
+# ==============================================
+# 2. SEO: PAGE TITLE & META TAGS
+# ==============================================
+# Set the browser tab title (Crucial for SEO)
+m.get_root().title = "Nepal Hydropower Map | Interactive Power Plant Projects | Binaya Basnet"
+
+# Meta Tags for Search Engines (Description, Keywords, Author)
+seo_meta_html = """
+<meta name="description" content="Explore Nepal's hydropower projects on our interactive map. Filter by license boundary, capacity, and status. Updated 2026 data by Er. Binaya Basnet.">
+<meta name="keywords" content="Nepal hydropower map, hydropower projects Nepal, power plant Nepal, license boundary Nepal, Binaya Basnet, water resources Nepal, interactive map Nepal, DoED license, electricity development Nepal">
+<meta name="author" content="Er. Binaya Basnet">
+<meta name="robots" content="index, follow">
+"""
+m.get_root().header.add_child(folium.Element(seo_meta_html))
+
+# ==============================================
+# 3. SEO: STRUCTURED DATA (JSON-LD SCHEMA)
+# ==============================================
+# This helps Google understand the site is an interactive map/database
+schema_html = """
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Nepal Hydropower Map",
+  "url": "https://hydronaxa.com",
+  "description": "Interactive map of hydropower and power plant projects in Nepal with license boundaries and project details",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://hydronaxa.com/index.html?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  },
+  "creator": {
+    "@type": "Person",
+    "name": "Er. Binaya Basnet",
+    "url": "https://binayabasnet.com.np"
+  },
+  "keywords": ["hydropower", "Nepal", "water resources", "power plant", "license boundary", "interactive map"]
+}
+</script>
+"""
+m.get_root().header.add_child(folium.Element(schema_html))
+
+# ==============================================
+# 4. SEO: HIDDEN KEYWORD-RICH CONTENT
+# ==============================================
+# Search engines can read this to understand the depth of your map's data
+# without cluttering your visual interface.
+hidden_seo_html = """
+<div style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true">
+  <h1>Nepal Hydropower Projects Interactive Map</h1>
+  <h2>Comprehensive Visualization of Power Plants in Nepal</h2>
+  <p>This interactive web map presents all licensed hydropower projects in Nepal, including run-of-river schemes, storage hydro, peaking run-of-river, and pumped storage projects. Data includes project capacity (MW), license boundaries, construction status, and developer information. Updated regularly with information from the Department of Electricity Development (DoED) and other official sources.</p>
+  
+  <h3>Map Features & Data Layers:</h3>
+  <ul>
+    <li>Interactive license boundary visualization for survey and construction</li>
+    <li>Project filtering by capacity, status, and river basin</li>
+    <li>Detailed information on each hydropower project in Nepal</li>
+    <li>Provincial and national statistics on power generation</li>
+    <li>Search functionality for specific projects, developers, or locations</li>
+    <li>Satellite hybrid base map for terrain analysis</li>
+  </ul>
+  
+  <h3>Data Sources:</h3>
+  <p>Department of Electricity Development (DoED), Nepal Electricity Authority (NEA), Survey Department, and project developers. Co-ordinates transformed from Everest 1830 to WGS 1984 datum for accurate GIS mapping.</p>
+  
+  <h3>About the Developer</h3>
+  <p>This GIS database and WebGIS platform was developed by Er. Binaya Basnet, Civil Engineer specializing in Hydrology/Hydraulics, Climate Resilience, and GIS/WebGIS technologies.</p>
+</div>
+"""
+m.get_root().html.add_child(folium.Element(hidden_seo_html))
+
 # Save the map
 m.save("index.html")
 print("Map saved with bounding box zooming!")
