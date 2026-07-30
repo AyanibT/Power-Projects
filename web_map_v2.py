@@ -225,26 +225,55 @@ m.get_root().header.add_child(folium.Element(seo_meta_html))
 # ==============================================
 # 3. SEO: STRUCTURED DATA (JSON-LD SCHEMA)
 # ==============================================
-# This helps Google understand the site is an interactive map/database
+# Upgraded with FAQ and Dataset schema for Rich Results
 schema_html = """
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Nepal Hydropower Map",
-  "url": "https://hydronaxa.com",
-  "description": "Interactive map of hydropower and power plant projects in Nepal with license boundaries and project details",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://hydronaxa.com/index.html?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  },
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Where can I find an interactive map of hydropower projects in Nepal?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can explore all licensed hydropower and power plant projects in Nepal on the interactive map at Hydronaxa (hydronaxa.com). It allows you to filter by license boundary, capacity, and status."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the Nepal hydropower map show license boundaries?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, the interactive map visualizes the exact survey and construction license boundaries issued by the Department of Electricity Development (DoED) for power plants across Nepal."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Who maintains the Nepal hydropower projects map?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The GIS database and interactive WebMap are maintained by Er. Binaya Basnet, a Civil Engineer specializing in Hydrology, Hydraulics, and GIS/WebGIS technologies."
+      }
+    }
+  ]
+},
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Hydropower Projects of Nepal Interactive Map",
+  "description": "Comprehensive GIS database and interactive map showing all licensed hydropower, solar, and power plant projects in Nepal. Includes license boundaries, capacity (MW), and project status.",
+  "keywords": ["hydropower", "Nepal", "water resources", "power plant", "license boundary", "DoED", "interactive map", "Binaya Basnet"],
   "creator": {
     "@type": "Person",
     "name": "Er. Binaya Basnet",
     "url": "https://binayabasnet.com.np"
   },
-  "keywords": ["hydropower", "Nepal", "water resources", "power plant", "license boundary", "interactive map"]
+  "spatialCoverage": {
+    "@type": "Place",
+    "name": "Nepal"
+  },
+  "url": "https://hydronaxa.com"
 }
 </script>
 """
