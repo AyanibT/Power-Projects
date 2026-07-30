@@ -197,6 +197,16 @@ m.get_root().html.add_child(folium.Element(footer_html))
 # Add the Legend to the Folium map
 m.get_root().html.add_child(folium.Element(legend_html))
 
+# ==============================================
+# ADD FAVICON TO HTML HEAD SECTION
+# ==============================================
+favicon_html = """
+<link rel="icon" type="image/png" href="HydroNaxa_logo.png">
+<link rel="shortcut icon" type="image/png" href="HydroNaxa_logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+"""
+m.get_root().header.add_child(folium.Element(favicon_html))
+
 # Save the map
 m.save("index.html")
 print("Map saved with bounding box zooming!")
