@@ -198,12 +198,15 @@ m.get_root().html.add_child(folium.Element(footer_html))
 m.get_root().html.add_child(folium.Element(legend_html))
 
 # ==============================================
-# ADD FAVICON TO HTML HEAD SECTION
+# 1. FAVICON IMPLEMENTATION (GENERATED PACKAGE)
 # ==============================================
 favicon_html = """
-<link rel="icon" type="image/png" href="HydroNaxa_logo.png">
-<link rel="shortcut icon" type="image/png" href="HydroNaxa_logo.png">
-<link rel="apple-touch-icon" href="logo.png">
+<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="HydroNaxa" />
+<link rel="manifest" href="/site.webmanifest" />
 """
 m.get_root().header.add_child(folium.Element(favicon_html))
 
