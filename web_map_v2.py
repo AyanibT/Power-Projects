@@ -3,6 +3,7 @@ import pandas as pd
 import folium
 from folium.plugins import Search, Geocoder
 import json
+import datetime
 
 # Load the shapefile and CSV
 shapefile_path = "AllGroup.shp"
@@ -218,7 +219,7 @@ m.get_root().title = "Nepal Hydropower Map | Interactive Power Plant Projects | 
 
 # Meta Tags for Search Engines (Description, Keywords, Author)
 seo_meta_html = """
-<meta name="description" content="Explore Nepal's hydropower projects on our interactive map. Filter by license boundary, capacity, and status. Updated 2026 data by Er. Binaya Basnet.">
+<meta name="description" content="Explore Nepal's hydropower projects on our interactive map. Filter by license boundary, capacity, and status. Updated {current_date}. Data Source: DoED. Made by Er. Binaya Basnet.">
 <meta name="keywords" content="Nepal hydropower map, hydropower projects Nepal, power plant Nepal, license boundary Nepal, Binaya Basnet, water resources Nepal, interactive map Nepal, DoED license, electricity development Nepal">
 <meta name="author" content="Er. Binaya Basnet">
 <meta name="robots" content="index, follow">
