@@ -37,7 +37,7 @@
       top: 70px;
       right: 15px;
       z-index: 1000;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.75);
       padding: 14px 18px;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
@@ -54,24 +54,29 @@
       transform: translateX(-50%);
       z-index: 1000;
       text-align: center;
-      pointer-events: none;   /* allows clicking through to map */
+      background: rgba(255, 255, 255, 0.7);   /* semi‑transparent background */
+      padding: 8px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      pointer-events: none;   /* container still allows clicks to map */
     }
     .title-bar h1 {
       margin: 0;
       font-size: 22px;
       font-weight: bold;
-      color: #2c3e50;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+      color: #1a1a1a;               /* darker, better contrast on white */
+      text-shadow: none;            /* remove heavy text shadow, background provides contrast */
     }
     .title-bar .author-line {
       margin-top: 4px;
       font-size: 13px;
-      color: #333;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+      color: #444;
+      text-shadow: none;
     }
     .title-bar .author-line a {
-      color: #1a0dab;
+      color: #0056b3;               /* better link colour */
       text-decoration: none;
+      pointer-events: auto;         /* re‑enable clicks on the link */
     }
     .title-bar .author-line a:hover {
       text-decoration: underline;
