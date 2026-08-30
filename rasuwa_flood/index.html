@@ -30,18 +30,51 @@
       height: 100vh;
     }
 
+
+
     .map-index-panel {
       position: absolute;
-      top: 15px;
+      top: 70px;
       right: 15px;
       z-index: 1000;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.5);
       padding: 14px 18px;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
       max-width: 320px;
       max-height: 85vh;
       overflow-y: auto;
+    }
+
+    /* Centered Title Bar */
+    .title-bar {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      text-align: center;
+      pointer-events: none;   /* allows clicking through to map */
+    }
+    .title-bar h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: bold;
+      color: #2c3e50;
+      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+    }
+    .title-bar .author-line {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #333;
+      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+    }
+    .title-bar .author-line a {
+      color: #1a0dab;
+      text-decoration: none;
+    }
+    .title-bar .author-line a:hover {
+      text-decoration: underline;
     }
     .map-index-panel h3 {
       margin: 0 0 10px 0;
@@ -133,6 +166,12 @@
 <body>
 
 <div id="map"></div>
+
+<!-- Centered Title Bar -->
+<div class="title-bar">
+  <h1>Rasuwa Flood &amp; Debris Flow – 26 August 2026</h1>
+  <div class="author-line">Made By: <a href="https://www.linkedin.com/in/binaya-basnet" target="_blank">Er. Binaya Basnet</a></div>
+</div>
 
 <div class="map-index-panel">
   <h3>Map Index & Layers</h3>
