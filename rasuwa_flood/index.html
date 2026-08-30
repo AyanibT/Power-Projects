@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rasuwa Flood Extent & QGIS Symbology</title>
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- GeoTIFF Parser & Leaflet GeoRaster Layer -->
+  <script src="https://unpkg.com/georaster"></script>
+  <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
+
+  <!-- Turf.js for geometric operations -->
+  <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #map {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .map-index-panel {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 14px 18px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      max-width: 320px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .map-index-panel h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #2c3e50;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 6px;
+    }
+    .map-index-panel h4 {
+      margin: 12px 0 6px 0;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #7f8c8d;
+      letter-spacing: 0.5px;
+    }
+    .layer-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .layer-item input {
+      margin-right: 8px;
+      cursor: pointer;
+    }
+
+    .swatch {
+      width: 20px;
+      height: 14px;
+      display: inline-block;
+      margin-right: 8px;
+      border-radius: 2px;
+      border: 1.5px solid #333;
+      box-sizing: border-box;
+    }
+    .swatch-line { height: 3px; border: none; }
+    .swatch-dashed { height: 0; border-top: 2.5px dashed #FFD700; border-bottom: none; }
+    .swatch-red-hatch {
+      border-color: #FF0000;
+      background: repeating-linear-gradient(45deg, #FF0000, #FF0000 2px, transparent 2px, transparent 6px);
+    }
+    .swatch-blue-hatch {
+      border-color: #2B7BBA;
+      background: repeating-linear-gradient(45deg, #2B7BBA, #2B7BBA 2px, transparent 2px, transparent 6px);
+    }
+    .swatch-blue-dots {
+      border-color: #2B7BBA;
+      background-image: radial-gradient(#2B7BBA 30%, transparent 30%);
+      background-size: 6px 6px;
+    }
+    .swatch-lake {
+      border-color: #2B5C8F;
+      background-color: rgba(50, 100, 160, 0.75);
+    }
+    .swatch-raster { background: linear-gradient(135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%); }
+
+    .label-qgis {
+      background: transparent !important;
+      border: none !important;
+      font-family: "Georgia", "Times New Roman", serif;
+      font-style: italic;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .label-flood {
+      font-size: 15px;
+      color: #FFFFFF;
+      text-shadow: -1px -1px 0 #D90000, 1px -1px 0 #D90000, -1px 1px 0 #D90000, 1px 1px 0 #D90000, 0 0 5px #000;
+    }
+    .label-buffer {
+      font-size: 13px;
+      color: #FFD700;
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    }
+    .label-lake {
+      font-size: 14px;
+      color: #E0F2FE;
+      text-shadow: -1px -1px 0 #1E3A8A, 1px -1px 0 #1E3A8A, -1px 1px 0 #1E3A8A, 1px 1px 0 #1E3A8A;
+    }
+    .label-glacier {
+      font-size: 14px;
+      color: #2B7BBA;
+      text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF, 0 0 3px #FFF;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div class="map-index-panel">
+  <h3>Map Index & Layers</h3>
+
+  <h4>Base Maps</h4>
+  <label class="layer-item">
+    <input type="radio" name="basemap" value="googleHybrid" checked onchange="switchBaseMap('googleHybrid')">
+    Google Hybrid
+  </label>
+  <label class="layer-item">
+    <input type="radio" name="basemap" value="osm" onchange="switchBaseMap('osm')">
+    OpenStreetMap
+  </label>
+
+  <h4>Vector Layers</h4>
+  <label class="layer-item">
+    <input type="checkbox" id="chk_floodPolygon" checked onchange="toggleVectorLayer('floodPolygon')">
+    <span class="swatch swatch-red-hatch"></span> Flood Inundation Area
+  </label>
+  <label class="layer-item">
+    <input type="checkbox" id="chk_floodBuffer" checked onchange="toggleVectorLayer('floodBuffer')">
+    <span class="swatch swatch-dashed"></span> Flood Buffer (30m)
+  </label>
+  <label class="layer-item">
+    <input type="checkbox" id="chk_lake1" checked onchange="toggleVectorLayer('lake1')">
+    <span class="swatch swatch-lake"></span> Upstream Lake (Lake 1)
+  </label>
+  <label class="layer-item">
+    <input type="checkbox" id="chk_lake2" checked onchange="toggleVectorLayer('lake2')">
+    <span class="swatch swatch-lake"></span> Lake 2
+  </label>
+  <label class="layer-item">
+    <input type="checkbox" id="chk_glacier" checked onchange="toggleVectorLayer('glacier')">
+    <span class="swatch swatch-blue-hatch"></span> Glacier
+  </label>
+  <label class="layer-item">
+    <input type="checkbox" id="chk_glacierBreak" checked onchange="toggleVectorLayer('glacierBreak')">
+    <span class="swatch swatch-blue-dots"></span> Glacier Break
+  </label>
+
+  <h4>Rasters (SWIR Composites)</h4>
+  <label class="layer-item">
+    <input type="radio" name="rasterGroup" value="none" checked onchange="switchRaster('none')">
+    None
+  </label>
+  <label class="layer-item">
+    <input type="radio" name="rasterGroup" value="landsatSwir" onchange="switchRaster('landsatSwir')">
+    <span class="swatch swatch-raster"></span> Landsat 9 SWIR Clip
+  </label>
+  <label class="layer-item">
+    <input type="radio" name="rasterGroup" value="sentinelSwir" onchange="switchRaster('sentinelSwir')">
+    <span class="swatch swatch-raster"></span> Sentinel-2 SWIR Clip
+  </label>
+</div>
+
+<script>
+  // 1. Initialize Map
+  var map = L.map('map', {
+    center: [28.279, 85.379],
+    zoom: 13,
+    zoomControl: true
+  });
+
+  // 2. Inject SVG Patterns
+  function injectSVGPatterns() {
+    var svg = document.querySelector('.leaflet-pane.leaflet-overlay-pane svg');
+    if (!svg) return;
+    var defs = svg.querySelector('defs') || document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    defs.innerHTML = `
+      <pattern id="hatch-red" width="20" height="20" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="0" x2="0" y2="20" stroke="#FF0000" stroke-width="2.2" />
+      </pattern>
+      <pattern id="hatch-blue" width="24" height="24" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="0" x2="0" y2="24" stroke="#2B7BBA" stroke-width="2.0" />
+      </pattern>
+      <pattern id="dots-blue" width="10" height="10" patternUnits="userSpaceOnUse">
+        <circle cx="5" cy="5" r="2.2" fill="#2B7BBA" />
+      </pattern>
+    `;
+    if (!svg.querySelector('defs')) svg.appendChild(defs);
+  }
+  map.on('overlayadd layeradd', injectSVGPatterns);
+
+  // 3. Base Maps
+  var baseMaps = {
+    googleHybrid: L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+      maxZoom: 20, attribution: '© Google Maps'
+    }).addTo(map),
+    osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '© OpenStreetMap contributors'
+    })
+  };
+  function switchBaseMap(selectedKey) {
+    Object.keys(baseMaps).forEach(key => {
+      if (map.hasLayer(baseMaps[key])) map.removeLayer(baseMaps[key]);
+    });
+    baseMaps[selectedKey].addTo(map);
+  }
+
+  // 4. Styles & Layer Storage
+  var styles = {
+    floodPolygon: { color: '#FF0000', weight: 2.5, fillColor: 'url(#hatch-red)', fillOpacity: 1.0 },
+    floodBuffer:  { color: '#FFD700', weight: 2.2, dashArray: '8, 6', fill: false },
+    lake1:        { color: '#2B5C8F', weight: 1.5, fillColor: '#3264A0', fillOpacity: 0.75 },
+    lake2:        { color: '#2B5C8F', weight: 1.5, fillColor: '#3264A0', fillOpacity: 0.75 },
+    glacier:      { color: '#2B7BBA', weight: 2.0, fillColor: 'url(#hatch-blue)', fillOpacity: 1.0 },
+    glacierBreak: { color: '#2B7BBA', weight: 2.0, fillColor: 'url(#dots-blue)', fillOpacity: 1.0 }
+  };
+  var layers = {};
+
+  map.createPane('rasterPane');
+  map.getPane('rasterPane').style.zIndex = 250;
+
+  // Create dedicated pane for lakes (above other vectors)
+  map.createPane('lakePane');
+  map.getPane('lakePane').style.zIndex = 450;   // higher than default overlay pane (400)
+
+  // Vector Toggle
+  function toggleVectorLayer(key) {
+    var layer = layers[key];
+    if (!layer) return;
+    if (map.hasLayer(layer)) {
+      map.removeLayer(layer);
+      if (key === 'floodPolygon' && floodLabel) floodLabel.remove();
+      if (key === 'floodBuffer' && bufferLabel) bufferLabel.remove();
+    } else {
+      map.addLayer(layer);
+      if (key === 'floodPolygon' && floodLabel) {
+        floodLabel.addTo(map);
+        updateFloodLabelPosition();
+      }
+      if (key === 'floodBuffer' && bufferLabel) {
+        bufferLabel.addTo(map);
+        updateBufferLabelPosition();
+      }
+    }
+  }
+
+
+  // Raster Switching
+  var activeRasterKey = 'none';
+  var currentRasterLayer = null;
+  function switchRaster(selectedKey) {
+    if (currentRasterLayer && map.hasLayer(currentRasterLayer)) {
+      map.removeLayer(currentRasterLayer);
+    }
+    currentRasterLayer = null;
+    activeRasterKey = selectedKey;
+    if (selectedKey !== 'none' && layers[selectedKey]) {
+      map.addLayer(layers[selectedKey]);
+      currentRasterLayer = layers[selectedKey];
+    }
+  }
+
+  // 5. Load GeoJSON (with tooltip binding for non‑dynamic layers, optional custom pane)
+function loadGeoJSON(url, style, layerKey, labelClass, paneName) {
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      var options = {
+        style: style,
+        onEachFeature: function (feature, featureLayer) {
+          if (feature.properties) {
+            var popupContent = '<div style="max-height: 200px; overflow-y: auto;">';
+            popupContent += '<strong style="font-size: 13px; border-bottom: 2px solid #333; display: block; padding-bottom: 3px; margin-bottom: 5px;">Attributes</strong>';
+            popupContent += '<table style="width: 100%; border-collapse: collapse; font-size: 12px;">';
+            for (var key in feature.properties) {
+              popupContent += `<tr>
+                <td style="font-weight: bold; padding: 2px 6px 2px 0; border-bottom: 1px solid #eee; text-transform: capitalize;">${key}:</td>
+                <td style="padding: 2px 0; border-bottom: 1px solid #eee;">${feature.properties[key]}</td>
+              </tr>`;
+            }
+            popupContent += '</table></div>';
+            featureLayer.bindPopup(popupContent);
+
+            // Bind tooltip only for layers that are NOT flood/buffer (they have dynamic labels)
+            if (layerKey !== 'floodPolygon' && layerKey !== 'floodBuffer' && labelClass) {
+              var nameValue = feature.properties.Name || feature.properties.name || feature.properties.NAME;
+              if (nameValue) {
+                featureLayer.bindTooltip(String(nameValue), {
+                  permanent: true,
+                  direction: 'center',
+                  className: 'label-qgis ' + labelClass
+                });
+              }
+            }
+          }
+        }
+      };
+
+      // Assign custom pane if provided (e.g., 'lakePane' for lakes)
+      if (paneName) {
+        options.pane = paneName;
+      }
+
+      var geoLayer = L.geoJSON(data, options);
+
+      layers[layerKey] = geoLayer;
+      geoLayer.addTo(map);
+      injectSVGPatterns();
+
+      // Handle dynamic labels for flood and buffer (single feature each)
+      if (layerKey === 'floodPolygon') {
+        floodFeature = data.features[0];
+        createFloodLabel();
+      } else if (layerKey === 'floodBuffer') {
+        bufferFeature = data.features[0];
+        createBufferLabel();
+      }
+    })
+    .catch(err => console.error('Error loading GeoJSON (' + layerKey + '):', err));
+}
+
+  // Dynamic Labels for Flood & Buffer
+  var floodLabel = null, bufferLabel = null;
+  var floodFeature = null, bufferFeature = null;
+
+  function createFloodLabel() {
+    if (!floodFeature) return;
+    var name = floodFeature.properties.Name || floodFeature.properties.name || 'Flood Inundation Area';
+    floodLabel = L.marker([0,0], {
+      icon: L.divIcon({ className: 'label-qgis label-flood', html: name, iconSize: null }),
+      interactive: false
+    });
+    floodLabel.addTo(map);
+    updateFloodLabelPosition();
+  }
+
+  function createBufferLabel() {
+    if (!bufferFeature) return;
+    var name = bufferFeature.properties.Name || bufferFeature.properties.name || 'Flood Buffer (30m)';
+    bufferLabel = L.marker([0,0], {
+      icon: L.divIcon({ className: 'label-qgis label-buffer', html: name, iconSize: null }),
+      interactive: false
+    });
+    bufferLabel.addTo(map);
+    updateBufferLabelPosition();
+  }
+
+  function getVisiblePointInsidePolygon(feature) {
+    var bounds = map.getBounds();
+    var bboxPoly = turf.bboxPolygon([
+      bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()
+    ]);
+    var intersection = null;
+    try {
+      intersection = turf.intersect(feature, bboxPoly);
+    } catch(e) {
+      return turf.pointOnFeature(feature);
+    }
+    if (intersection) {
+      return turf.pointOnFeature(intersection);
+    } else {
+      return turf.pointOnFeature(feature);
+    }
+  }
+
+  function getVisiblePointOutsideBuffer(feature) {
+    var bounds = map.getBounds();
+    var bboxPoly = turf.bboxPolygon([
+      bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()
+    ]);
+    var intersection = null;
+    try {
+      intersection = turf.intersect(feature, bboxPoly);
+    } catch(e) {
+      // fallback: use centroid and move outward
+      var centroid = turf.centroid(feature);
+      var line = turf.polygonToLine(feature);
+      var nearest = turf.nearestPointOnLine(line, centroid);
+      var coords = nearest.geometry.coordinates;
+      var dx = coords[0] - centroid.geometry.coordinates[0];
+      var dy = coords[1] - centroid.geometry.coordinates[1];
+      var dist = Math.sqrt(dx*dx + dy*dy) || 1;
+      var offset = 0.0005;
+      return [coords[0] + (dx/dist)*offset, coords[1] + (dy/dist)*offset];
+    }
+    if (!intersection) return null;
+
+    var intersectionCentroid = turf.centroid(intersection);
+    var isInside = false;
+    try {
+      isInside = turf.booleanPointInPolygon(intersectionCentroid, feature);
+    } catch(e) { isInside = true; }
+    if (!isInside) {
+      return intersectionCentroid.geometry.coordinates;
+    }
+    // Point is inside buffer, move outward from nearest boundary point
+    var line = turf.polygonToLine(feature);
+    var nearest = turf.nearestPointOnLine(line, intersectionCentroid);
+    var coords = nearest.geometry.coordinates;
+    var dx = coords[0] - intersectionCentroid.geometry.coordinates[0];
+    var dy = coords[1] - intersectionCentroid.geometry.coordinates[1];
+    var dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    var offset = 0.0005;
+    return [coords[0] + (dx/dist)*offset, coords[1] + (dy/dist)*offset];
+  }
+
+  function updateFloodLabelPosition() {
+    if (!floodFeature || !floodLabel) return;
+    var point = getVisiblePointInsidePolygon(floodFeature);
+    if (point) {
+      floodLabel.setLatLng([point.geometry.coordinates[1], point.geometry.coordinates[0]]);
+    }
+  }
+
+  function updateBufferLabelPosition() {
+    if (!bufferFeature || !bufferLabel) return;
+    var coords = getVisiblePointOutsideBuffer(bufferFeature);
+    if (coords) {
+      bufferLabel.setLatLng([coords[1], coords[0]]);
+    }
+  }
+
+  function updateDynamicLabels() {
+    updateFloodLabelPosition();
+    updateBufferLabelPosition();
+  }
+
+  map.on('moveend zoomend', updateDynamicLabels);
+
+  // 6. Load all vector layers
+  loadGeoJSON('data/Flood_Polygon.geojson', styles.floodPolygon, 'floodPolygon', 'label-flood');
+  loadGeoJSON('data/Flood_Buffer_30m.geojson', styles.floodBuffer, 'floodBuffer', 'label-buffer');
+  loadGeoJSON('data/Lake_1.geojson', styles.lake1, 'lake1', 'label-lake', 'lakePane');
+  loadGeoJSON('data/Lake_2.geojson', styles.lake2, 'lake2', 'label-lake', 'lakePane');
+  loadGeoJSON('data/Glacier.geojson', styles.glacier, 'glacier', 'label-glacier');
+  loadGeoJSON('data/Glacier_break.geojson', styles.glacierBreak, 'glacierBreak', 'label-glacier');
+
+  // 7. Load GeoTIFFs
+  function load3BandGeoTIFF(url, layerKey) {
+    fetch(url)
+      .then(res => res.arrayBuffer())
+      .then(arrayBuffer => parseGeoraster(arrayBuffer))
+      .then(georaster => {
+        var layer = new GeoRasterLayer({
+          georaster: georaster,
+          opacity: 0.85,
+          resolution: 256,
+          pane: 'rasterPane',
+          pixelValuesToColorFn: values => {
+            var r = values[0], g = values[1], b = values[2];
+            if (r === null || r === undefined || (r === 0 && g === 0 && b === 0)) return null;
+            return `rgb(${r},${g},${b})`;
+          }
+        });
+        layers[layerKey] = layer;
+        if (activeRasterKey === layerKey) {
+          switchRaster(layerKey);
+        }
+      })
+      .catch(err => console.error('Error loading GeoTIFF (' + layerKey + '):', err));
+  }
+
+  load3BandGeoTIFF('data/Landsat9_SWIR_Clip.tif', 'landsatSwir');
+  load3BandGeoTIFF('data/Sentinel2_SWIR_Clip.tif', 'sentinelSwir');
+</script>
+
+</body>
+</html>
