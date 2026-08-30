@@ -504,7 +504,7 @@ function loadGeoJSON(url, style, layerKey, labelClass, paneName) {
   loadGeoJSON('data/Lake_1.geojson', styles.lake1, 'lake1', 'label-lake', 'lakePane');
   loadGeoJSON('data/Lake_2.geojson', styles.lake2, 'lake2', 'label-lake', 'lakePane');
   loadGeoJSON('data/Glacier.geojson', styles.glacier, 'glacier', 'label-glacier');
-  loadGeoJSON('data/Glacier_break.geojson', styles.glacierBreak, 'glacierBreak', 'label-glacier');
+  loadGeoJSON('data/Glacier_break.geojson', styles.glacierBreak, 'glacierBreak', 'label-glacier', 'lakePane');
 
   // 7. Load GeoTIFFs
   function load3BandGeoTIFF(url, layerKey) {
