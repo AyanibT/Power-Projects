@@ -219,8 +219,8 @@
         font-size: 11px;
       }
       .leaflet-control-zoom {
-        margin-left: 8px !important;
-        margin-bottom: 20px !important;
+        margin-left: 10px !important;
+        margin-top: 70px !important;  /* clear title bar */
       }
       .leaflet-popup-content {
         font-size: 12px;
@@ -339,7 +339,7 @@
 
   // Move zoom control on mobile
   if (window.innerWidth <= 768) {
-    map.zoomControl.setPosition('bottomleft');
+    map.zoomControl.setPosition('topleft');
   }
 
   // 2. Inject SVG Hatch & Dot Pattern Definitions
@@ -648,6 +648,15 @@
     } else {
       panel.style.display = 'none';
       this.textContent = '☰ Layers';
+    }
+  });
+
+  // 13. Fix panel visibility when resizing to desktop
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+      var panel = document.querySelector('.map-index-panel');
+      panel.style.display = ''; // reset to default (visible)
+      document.getElementById('panelToggle').textContent = '☰ Layers';
     }
   });
 </script>
