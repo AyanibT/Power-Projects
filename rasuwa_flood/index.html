@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Rasuwa Flood Extent & QGIS Symbology</title>
 
   <!-- Leaflet CSS & JS -->
@@ -30,22 +30,6 @@
       height: 100vh;
     }
 
-
-
-    .map-index-panel {
-      position: absolute;
-      top: 70px;
-      right: 15px;
-      z-index: 1000;
-      background: rgba(255, 255, 255, 0.75);
-      padding: 14px 18px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      max-width: 320px;
-      max-height: 85vh;
-      overflow-y: auto;
-    }
-
     /* Centered Title Bar */
     .title-bar {
       position: absolute;
@@ -64,8 +48,8 @@
       margin: 0;
       font-size: 22px;
       font-weight: bold;
-      color: #1a1a1a;               /* darker, better contrast on white */
-      text-shadow: none;            /* remove heavy text shadow, background provides contrast */
+      color: #1a1a1a;
+      text-shadow: none;
     }
     .title-bar .author-line {
       margin-top: 4px;
@@ -74,20 +58,27 @@
       text-shadow: none;
     }
     .title-bar .author-line a {
-      color: #0056b3;               /* better link colour */
+      color: #0056b3;
       text-decoration: none;
-      pointer-events: auto;         /* re‑enable clicks on the link */
+      pointer-events: auto;  /* re‑enable clicks on the link */
     }
     .title-bar .author-line a:hover {
       text-decoration: underline;
     }
-    .map-index-panel h3 {
-      margin: 0 0 10px 0;
-      font-size: 16px;
-      font-weight: bold;
-      color: #2c3e50;
-      border-bottom: 2px solid #ecf0f1;
-      padding-bottom: 6px;
+
+    /* Floating Map Index Panel – 50% transparent */
+    .map-index-panel {
+      position: absolute;
+      top: 70px;
+      right: 15px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 14px 18px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      max-width: 320px;
+      max-height: 85vh;
+      overflow-y: auto;
     }
     .map-index-panel h4 {
       margin: 12px 0 6px 0;
@@ -108,6 +99,7 @@
       cursor: pointer;
     }
 
+    /* Legend Swatches Matching QGIS Fill Patterns */
     .swatch {
       width: 20px;
       height: 14px;
@@ -138,6 +130,7 @@
     }
     .swatch-raster { background: linear-gradient(135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%); }
 
+    /* QGIS Map Labels */
     .label-qgis {
       background: transparent !important;
       border: none !important;
@@ -166,6 +159,105 @@
       color: #2B7BBA;
       text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF, 0 0 3px #FFF;
     }
+
+    /* Mobile Toggle Button */
+    .panel-toggle-btn {
+      display: none;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 1100;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .map-index-panel {
+        top: auto;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        max-width: 100%;
+        width: 100%;
+        max-height: 45vh;
+        border-radius: 12px 12px 0 0;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+      }
+      .map-index-panel h3 {
+        font-size: 15px;
+      }
+      .map-index-panel h4 {
+        font-size: 11px;
+        margin-top: 8px;
+      }
+      .layer-item {
+        font-size: 12px;
+        padding: 2px 0;
+      }
+      .title-bar {
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 6px 12px;
+        width: auto;
+        max-width: 90vw;
+        background: rgba(255, 255, 255, 0.75);
+      }
+      .title-bar h1 {
+        font-size: 16px;
+      }
+      .title-bar .author-line {
+        font-size: 11px;
+      }
+      .leaflet-control-zoom {
+        margin-left: 8px !important;
+        margin-bottom: 20px !important;
+      }
+      .leaflet-popup-content {
+        font-size: 12px;
+        max-width: 250px !important;
+      }
+      .label-flood { font-size: 12px !important; }
+      .label-buffer { font-size: 11px !important; }
+      .label-lake { font-size: 12px !important; }
+      .label-glacier { font-size: 11px !important; }
+      .panel-toggle-btn {
+        display: block;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .title-bar h1 {
+        font-size: 14px;
+      }
+      .title-bar .author-line {
+        font-size: 10px;
+      }
+      .map-index-panel {
+        max-height: 40vh;
+        padding: 8px 10px;
+      }
+      .layer-item {
+        font-size: 11px;
+      }
+      .map-index-panel h4 {
+        font-size: 10px;
+      }
+      .swatch {
+        width: 16px;
+        height: 12px;
+        margin-right: 6px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -178,9 +270,12 @@
   <div class="author-line">Made By: <a href="https://www.linkedin.com/in/binaya-basnet" target="_blank">Er. Binaya Basnet</a></div>
 </div>
 
-<div class="map-index-panel">
-  <h3>Map Index & Layers</h3>
+<!-- Mobile Panel Toggle Button -->
+<button id="panelToggle" class="panel-toggle-btn">☰ Layers</button>
 
+<!-- Custom Floating Map Index Panel -->
+<div class="map-index-panel">
+  <!-- Base Maps Section -->
   <h4>Base Maps</h4>
   <label class="layer-item">
     <input type="radio" name="basemap" value="googleHybrid" checked onchange="switchBaseMap('googleHybrid')">
@@ -191,6 +286,7 @@
     OpenStreetMap
   </label>
 
+  <!-- Vector Layers Section -->
   <h4>Vector Layers</h4>
   <label class="layer-item">
     <input type="checkbox" id="chk_floodPolygon" checked onchange="toggleVectorLayer('floodPolygon')">
@@ -217,6 +313,7 @@
     <span class="swatch swatch-blue-dots"></span> Glacier Break
   </label>
 
+  <!-- Raster Layers Section (Base-Map Style Single-Selection) -->
   <h4>Rasters (SWIR Composites)</h4>
   <label class="layer-item">
     <input type="radio" name="rasterGroup" value="none" checked onchange="switchRaster('none')">
@@ -240,10 +337,16 @@
     zoomControl: true
   });
 
-  // 2. Inject SVG Patterns
+  // Move zoom control on mobile
+  if (window.innerWidth <= 768) {
+    map.zoomControl.setPosition('bottomleft');
+  }
+
+  // 2. Inject SVG Hatch & Dot Pattern Definitions
   function injectSVGPatterns() {
     var svg = document.querySelector('.leaflet-pane.leaflet-overlay-pane svg');
     if (!svg) return;
+    
     var defs = svg.querySelector('defs') || document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     defs.innerHTML = `
       <pattern id="hatch-red" width="20" height="20" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
@@ -258,9 +361,10 @@
     `;
     if (!svg.querySelector('defs')) svg.appendChild(defs);
   }
+
   map.on('overlayadd layeradd', injectSVGPatterns);
 
-  // 3. Base Maps
+  // 3. Base Map Tile Layers
   var baseMaps = {
     googleHybrid: L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
       maxZoom: 20, attribution: '© Google Maps'
@@ -269,14 +373,17 @@
       maxZoom: 19, attribution: '© OpenStreetMap contributors'
     })
   };
+
   function switchBaseMap(selectedKey) {
     Object.keys(baseMaps).forEach(key => {
-      if (map.hasLayer(baseMaps[key])) map.removeLayer(baseMaps[key]);
+      if (map.hasLayer(baseMaps[key])) {
+        map.removeLayer(baseMaps[key]);
+      }
     });
     baseMaps[selectedKey].addTo(map);
   }
 
-  // 4. Styles & Layer Storage
+  // 4. QGIS Style Definitions & Layer Storage
   var styles = {
     floodPolygon: { color: '#FF0000', weight: 2.5, fillColor: 'url(#hatch-red)', fillOpacity: 1.0 },
     floodBuffer:  { color: '#FFD700', weight: 2.2, dashArray: '8, 6', fill: false },
@@ -285,16 +392,18 @@
     glacier:      { color: '#2B7BBA', weight: 2.0, fillColor: 'url(#hatch-blue)', fillOpacity: 1.0 },
     glacierBreak: { color: '#2B7BBA', weight: 2.0, fillColor: 'url(#dots-blue)', fillOpacity: 1.0 }
   };
+
   var layers = {};
 
+  // Create dedicated Map Pane for Rasters (below vectors)
   map.createPane('rasterPane');
   map.getPane('rasterPane').style.zIndex = 250;
 
-  // Create dedicated pane for lakes (above other vectors)
+  // Create dedicated pane for lakes and glacier break (above other vectors)
   map.createPane('lakePane');
-  map.getPane('lakePane').style.zIndex = 450;   // higher than default overlay pane (400)
+  map.getPane('lakePane').style.zIndex = 450;
 
-  // Vector Toggle
+  // Vector Toggle Logic
   function toggleVectorLayer(key) {
     var layer = layers[key];
     if (!layer) return;
@@ -315,10 +424,10 @@
     }
   }
 
-
-  // Raster Switching
+  // --- Raster Switching (Base‑Map Style) ---
   var activeRasterKey = 'none';
   var currentRasterLayer = null;
+
   function switchRaster(selectedKey) {
     if (currentRasterLayer && map.hasLayer(currentRasterLayer)) {
       map.removeLayer(currentRasterLayer);
@@ -332,63 +441,61 @@
   }
 
   // 5. Load GeoJSON (with tooltip binding for non‑dynamic layers, optional custom pane)
-function loadGeoJSON(url, style, layerKey, labelClass, paneName) {
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      var options = {
-        style: style,
-        onEachFeature: function (feature, featureLayer) {
-          if (feature.properties) {
-            var popupContent = '<div style="max-height: 200px; overflow-y: auto;">';
-            popupContent += '<strong style="font-size: 13px; border-bottom: 2px solid #333; display: block; padding-bottom: 3px; margin-bottom: 5px;">Attributes</strong>';
-            popupContent += '<table style="width: 100%; border-collapse: collapse; font-size: 12px;">';
-            for (var key in feature.properties) {
-              popupContent += `<tr>
-                <td style="font-weight: bold; padding: 2px 6px 2px 0; border-bottom: 1px solid #eee; text-transform: capitalize;">${key}:</td>
-                <td style="padding: 2px 0; border-bottom: 1px solid #eee;">${feature.properties[key]}</td>
-              </tr>`;
-            }
-            popupContent += '</table></div>';
-            featureLayer.bindPopup(popupContent);
+  function loadGeoJSON(url, style, layerKey, labelClass, paneName) {
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        var options = {
+          style: style,
+          onEachFeature: function (feature, featureLayer) {
+            if (feature.properties) {
+              var popupContent = '<div style="max-height: 200px; overflow-y: auto;">';
+              popupContent += '<strong style="font-size: 13px; border-bottom: 2px solid #333; display: block; padding-bottom: 3px; margin-bottom: 5px;">Attributes</strong>';
+              popupContent += '<table style="width: 100%; border-collapse: collapse; font-size: 12px;">';
+              for (var key in feature.properties) {
+                popupContent += `<tr>
+                  <td style="font-weight: bold; padding: 2px 6px 2px 0; border-bottom: 1px solid #eee; text-transform: capitalize;">${key}:</td>
+                  <td style="padding: 2px 0; border-bottom: 1px solid #eee;">${feature.properties[key]}</td>
+                </tr>`;
+              }
+              popupContent += '</table></div>';
+              featureLayer.bindPopup(popupContent);
 
-            // Bind tooltip only for layers that are NOT flood/buffer (they have dynamic labels)
-            if (layerKey !== 'floodPolygon' && layerKey !== 'floodBuffer' && labelClass) {
-              var nameValue = feature.properties.Name || feature.properties.name || feature.properties.NAME;
-              if (nameValue) {
-                featureLayer.bindTooltip(String(nameValue), {
-                  permanent: true,
-                  direction: 'center',
-                  className: 'label-qgis ' + labelClass
-                });
+              // Bind tooltip only for layers that are NOT flood/buffer
+              if (layerKey !== 'floodPolygon' && layerKey !== 'floodBuffer' && labelClass) {
+                var nameValue = feature.properties.Name || feature.properties.name || feature.properties.NAME;
+                if (nameValue) {
+                  featureLayer.bindTooltip(String(nameValue), {
+                    permanent: true,
+                    direction: 'center',
+                    className: 'label-qgis ' + labelClass
+                  });
+                }
               }
             }
           }
+        };
+
+        if (paneName) {
+          options.pane = paneName;
         }
-      };
 
-      // Assign custom pane if provided (e.g., 'lakePane' for lakes)
-      if (paneName) {
-        options.pane = paneName;
-      }
+        var geoLayer = L.geoJSON(data, options);
 
-      var geoLayer = L.geoJSON(data, options);
+        layers[layerKey] = geoLayer;
+        geoLayer.addTo(map);
+        injectSVGPatterns();
 
-      layers[layerKey] = geoLayer;
-      geoLayer.addTo(map);
-      injectSVGPatterns();
-
-      // Handle dynamic labels for flood and buffer (single feature each)
-      if (layerKey === 'floodPolygon') {
-        floodFeature = data.features[0];
-        createFloodLabel();
-      } else if (layerKey === 'floodBuffer') {
-        bufferFeature = data.features[0];
-        createBufferLabel();
-      }
-    })
-    .catch(err => console.error('Error loading GeoJSON (' + layerKey + '):', err));
-}
+        if (layerKey === 'floodPolygon') {
+          floodFeature = data.features[0];
+          createFloodLabel();
+        } else if (layerKey === 'floodBuffer') {
+          bufferFeature = data.features[0];
+          createBufferLabel();
+        }
+      })
+      .catch(err => console.error('Error loading GeoJSON (' + layerKey + '):', err));
+  }
 
   // Dynamic Labels for Flood & Buffer
   var floodLabel = null, bufferLabel = null;
@@ -443,7 +550,6 @@ function loadGeoJSON(url, style, layerKey, labelClass, paneName) {
     try {
       intersection = turf.intersect(feature, bboxPoly);
     } catch(e) {
-      // fallback: use centroid and move outward
       var centroid = turf.centroid(feature);
       var line = turf.polygonToLine(feature);
       var nearest = turf.nearestPointOnLine(line, centroid);
@@ -464,7 +570,6 @@ function loadGeoJSON(url, style, layerKey, labelClass, paneName) {
     if (!isInside) {
       return intersectionCentroid.geometry.coordinates;
     }
-    // Point is inside buffer, move outward from nearest boundary point
     var line = turf.polygonToLine(feature);
     var nearest = turf.nearestPointOnLine(line, intersectionCentroid);
     var coords = nearest.geometry.coordinates;
@@ -533,6 +638,18 @@ function loadGeoJSON(url, style, layerKey, labelClass, paneName) {
 
   load3BandGeoTIFF('data/Landsat9_SWIR_Clip.tif', 'landsatSwir');
   load3BandGeoTIFF('data/Sentinel2_SWIR_Clip.tif', 'sentinelSwir');
+
+  // Mobile panel toggle
+  document.getElementById('panelToggle').addEventListener('click', function() {
+    var panel = document.querySelector('.map-index-panel');
+    if (panel.style.display === 'none') {
+      panel.style.display = 'block';
+      this.textContent = '✕ Close';
+    } else {
+      panel.style.display = 'none';
+      this.textContent = '☰ Layers';
+    }
+  });
 </script>
 
 </body>
