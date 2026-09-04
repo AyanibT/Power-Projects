@@ -38,11 +38,11 @@
       transform: translateX(-50%);
       z-index: 1000;
       text-align: center;
-      background: rgba(255, 255, 255, 0.7);   /* semi‑transparent background */
+      background: rgba(255, 255, 255, 0.85);
       padding: 8px 20px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      pointer-events: none;   /* container still allows clicks to map */
+      pointer-events: none;
     }
     .title-bar h1 {
       margin: 0;
@@ -60,7 +60,7 @@
     .title-bar .author-line a {
       color: #0056b3;
       text-decoration: none;
-      pointer-events: auto;  /* re‑enable clicks on the link */
+      pointer-events: auto;
     }
     .title-bar .author-line a:hover {
       text-decoration: underline;
@@ -99,7 +99,7 @@
       cursor: pointer;
     }
 
-    /* Legend Swatches Matching QGIS Fill Patterns */
+    /* Legend Swatches */
     .swatch {
       width: 20px;
       height: 14px;
@@ -129,6 +129,11 @@
       background-color: rgba(50, 100, 160, 0.75);
     }
     .swatch-raster { background: linear-gradient(135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%); }
+    /* New swatch for affected projects (split red/green) */
+    .swatch-affected-projects {
+      background: linear-gradient(to right, #FF0000 50%, #00FF00 50%);
+      border-color: #333;
+    }
 
     /* QGIS Map Labels */
     .label-qgis {
@@ -158,6 +163,12 @@
       font-size: 14px;
       color: #2B7BBA;
       text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF, 0 0 3px #FFF;
+    }
+    /* New label for affected projects */
+    .label-affected {
+      font-size: 12px;
+      color: #000;
+      text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
     }
 
     /* Mobile Toggle Button */
@@ -210,7 +221,7 @@
         padding: 6px 12px;
         width: auto;
         max-width: 90vw;
-        background: rgba(255, 255, 255, 0.75);
+        background: rgba(255, 255, 255, 0.85);
       }
       .title-bar h1 {
         font-size: 16px;
@@ -220,7 +231,7 @@
       }
       .leaflet-control-zoom {
         margin-left: 10px !important;
-        margin-top: 70px !important;  /* clear title bar */
+        margin-top: 70px !important;
       }
       .leaflet-popup-content {
         font-size: 12px;
@@ -230,6 +241,7 @@
       .label-buffer { font-size: 11px !important; }
       .label-lake { font-size: 12px !important; }
       .label-glacier { font-size: 11px !important; }
+      .label-affected { font-size: 10px !important; }
       .panel-toggle-btn {
         display: block;
       }
@@ -312,8 +324,13 @@
     <input type="checkbox" id="chk_glacierBreak" checked onchange="toggleVectorLayer('glacierBreak')">
     <span class="swatch swatch-blue-dots"></span> Glacier Break
   </label>
+  <!-- New: Affected Projects -->
+  <label class="layer-item">
+    <input type="checkbox" id="chk_affectedProjects" checked onchange="toggleVectorLayer('affectedProjects')">
+    <span class="swatch swatch-affected-projects"></span> Affected Projects (Red: Operation, Green: Under Construction)
+  </label>
 
-  <!-- Raster Layers Section (Base-Map Style Single-Selection) -->
+  <!-- Raster Layers Section -->
   <h4>Rasters (SWIR Composites)</h4>
   <label class="layer-item">
     <input type="radio" name="rasterGroup" value="none" checked onchange="switchRaster('none')">
@@ -337,16 +354,15 @@
     zoomControl: true
   });
 
-  // Move zoom control on mobile
+  // 2. Move zoom control to top-left on mobile
   if (window.innerWidth <= 768) {
     map.zoomControl.setPosition('topleft');
   }
 
-  // 2. Inject SVG Hatch & Dot Pattern Definitions
+  // 3. Inject SVG Patterns
   function injectSVGPatterns() {
     var svg = document.querySelector('.leaflet-pane.leaflet-overlay-pane svg');
     if (!svg) return;
-    
     var defs = svg.querySelector('defs') || document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     defs.innerHTML = `
       <pattern id="hatch-red" width="20" height="20" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
@@ -361,10 +377,9 @@
     `;
     if (!svg.querySelector('defs')) svg.appendChild(defs);
   }
-
   map.on('overlayadd layeradd', injectSVGPatterns);
 
-  // 3. Base Map Tile Layers
+  // 4. Base Map Tile Layers
   var baseMaps = {
     googleHybrid: L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
       maxZoom: 20, attribution: '© Google Maps'
@@ -373,37 +388,37 @@
       maxZoom: 19, attribution: '© OpenStreetMap contributors'
     })
   };
-
   function switchBaseMap(selectedKey) {
     Object.keys(baseMaps).forEach(key => {
-      if (map.hasLayer(baseMaps[key])) {
-        map.removeLayer(baseMaps[key]);
-      }
+      if (map.hasLayer(baseMaps[key])) map.removeLayer(baseMaps[key]);
     });
     baseMaps[selectedKey].addTo(map);
   }
 
-  // 4. QGIS Style Definitions & Layer Storage
+  // 5. Styles & Layer Storage
   var styles = {
     floodPolygon: { color: '#FF0000', weight: 2.5, fillColor: 'url(#hatch-red)', fillOpacity: 1.0 },
     floodBuffer:  { color: '#FFD700', weight: 2.2, dashArray: '8, 6', fill: false },
     lake1:        { color: '#2B5C8F', weight: 1.5, fillColor: '#3264A0', fillOpacity: 0.75 },
     lake2:        { color: '#2B5C8F', weight: 1.5, fillColor: '#3264A0', fillOpacity: 0.75 },
     glacier:      { color: '#2B7BBA', weight: 2.0, fillColor: 'url(#hatch-blue)', fillOpacity: 1.0 },
-    glacierBreak: { color: '#2B7BBA', weight: 2.0, fillColor: 'url(#dots-blue)', fillOpacity: 1.0 }
+    glacierBreak: { color: '#2B7BBA', weight: 2.0, fillColor: 'url(#dots-blue)', fillOpacity: 1.0 },
+    // New style function for affected projects
+    affectedProjects: function(feature) {
+      var stage = feature.properties.Dev_stage;
+      var color = (stage === 'Operation') ? '#FF0000' : '#00FF00';
+      return { color: color, weight: 2.5, fill: false };
+    }
   };
-
   var layers = {};
 
-  // Create dedicated Map Pane for Rasters (below vectors)
   map.createPane('rasterPane');
   map.getPane('rasterPane').style.zIndex = 250;
 
-  // Create dedicated pane for lakes and glacier break (above other vectors)
   map.createPane('lakePane');
   map.getPane('lakePane').style.zIndex = 450;
 
-  // Vector Toggle Logic
+  // 6. Vector Toggle
   function toggleVectorLayer(key) {
     var layer = layers[key];
     if (!layer) return;
@@ -424,10 +439,9 @@
     }
   }
 
-  // --- Raster Switching (Base‑Map Style) ---
+  // 7. Raster Switching
   var activeRasterKey = 'none';
   var currentRasterLayer = null;
-
   function switchRaster(selectedKey) {
     if (currentRasterLayer && map.hasLayer(currentRasterLayer)) {
       map.removeLayer(currentRasterLayer);
@@ -440,7 +454,7 @@
     }
   }
 
-  // 5. Load GeoJSON (with tooltip binding for non‑dynamic layers, optional custom pane)
+  // 8. Load GeoJSON
   function loadGeoJSON(url, style, layerKey, labelClass, paneName) {
     fetch(url)
       .then(res => res.json())
@@ -461,9 +475,10 @@
               popupContent += '</table></div>';
               featureLayer.bindPopup(popupContent);
 
-              // Bind tooltip only for layers that are NOT flood/buffer
+              // Bind tooltip for all layers except flood/buffer (dynamic labels)
               if (layerKey !== 'floodPolygon' && layerKey !== 'floodBuffer' && labelClass) {
-                var nameValue = feature.properties.Name || feature.properties.name || feature.properties.NAME;
+                // For affected projects, use Project attribute
+                var nameValue = feature.properties.Name || feature.properties.name || feature.properties.NAME || feature.properties.Project;
                 if (nameValue) {
                   featureLayer.bindTooltip(String(nameValue), {
                     permanent: true,
@@ -475,17 +490,11 @@
             }
           }
         };
-
-        if (paneName) {
-          options.pane = paneName;
-        }
-
+        if (paneName) options.pane = paneName;
         var geoLayer = L.geoJSON(data, options);
-
         layers[layerKey] = geoLayer;
         geoLayer.addTo(map);
         injectSVGPatterns();
-
         if (layerKey === 'floodPolygon') {
           floodFeature = data.features[0];
           createFloodLabel();
@@ -497,7 +506,7 @@
       .catch(err => console.error('Error loading GeoJSON (' + layerKey + '):', err));
   }
 
-  // Dynamic Labels for Flood & Buffer
+  // 9. Dynamic Labels for Flood & Buffer
   var floodLabel = null, bufferLabel = null;
   var floodFeature = null, bufferFeature = null;
 
@@ -561,7 +570,6 @@
       return [coords[0] + (dx/dist)*offset, coords[1] + (dy/dist)*offset];
     }
     if (!intersection) return null;
-
     var intersectionCentroid = turf.centroid(intersection);
     var isInside = false;
     try {
@@ -603,15 +611,17 @@
 
   map.on('moveend zoomend', updateDynamicLabels);
 
-  // 6. Load all vector layers
-  loadGeoJSON('data/Flood_Polygon.geojson', styles.floodPolygon, 'floodPolygon', 'label-flood');
-  loadGeoJSON('data/Flood_Buffer_30m.geojson', styles.floodBuffer, 'floodBuffer', 'label-buffer');
-  loadGeoJSON('data/Lake_1.geojson', styles.lake1, 'lake1', 'label-lake', 'lakePane');
-  loadGeoJSON('data/Lake_2.geojson', styles.lake2, 'lake2', 'label-lake', 'lakePane');
-  loadGeoJSON('data/Glacier.geojson', styles.glacier, 'glacier', 'label-glacier');
-  loadGeoJSON('data/Glacier_break.geojson', styles.glacierBreak, 'glacierBreak', 'label-glacier', 'lakePane');
+  // 10. Load vector layers
+  loadGeoJSON('data/flood_polygon.geojson', styles.floodPolygon, 'floodPolygon', 'label-flood');
+  loadGeoJSON('data/flood_buffer_30m.geojson', styles.floodBuffer, 'floodBuffer', 'label-buffer');
+  loadGeoJSON('data/lake_1.geojson', styles.lake1, 'lake1', 'label-lake', 'lakePane');
+  loadGeoJSON('data/lake_2.geojson', styles.lake2, 'lake2', 'label-lake', 'lakePane');
+  loadGeoJSON('data/glacier.geojson', styles.glacier, 'glacier', 'label-glacier');
+  loadGeoJSON('data/glacier_break.geojson', styles.glacierBreak, 'glacierBreak', 'label-glacier', 'lakePane');
+  // Load affected projects
+  loadGeoJSON('data/Affected_Projects.geojson', styles.affectedProjects, 'affectedProjects', 'label-affected');
 
-  // 7. Load GeoTIFFs
+  // 11. Load GeoTIFFs
   function load3BandGeoTIFF(url, layerKey) {
     fetch(url)
       .then(res => res.arrayBuffer())
@@ -639,7 +649,7 @@
   load3BandGeoTIFF('data/Landsat9_SWIR_Clip.tif', 'landsatSwir');
   load3BandGeoTIFF('data/Sentinel2_SWIR_Clip.tif', 'sentinelSwir');
 
-  // Mobile panel toggle
+  // 12. Mobile panel toggle
   document.getElementById('panelToggle').addEventListener('click', function() {
     var panel = document.querySelector('.map-index-panel');
     if (panel.style.display === 'none') {
