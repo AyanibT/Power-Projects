@@ -403,10 +403,13 @@
     lake2:        { color: '#2B5C8F', weight: 1.5, fillColor: '#3264A0', fillOpacity: 0.75 },
     glacier:      { color: '#2B7BBA', weight: 2.0, fillColor: 'url(#hatch-blue)', fillOpacity: 1.0 },
     glacierBreak: { color: '#2B7BBA', weight: 2.0, fillColor: 'url(#dots-blue)', fillOpacity: 1.0 },
+    
     // New style function for affected projects
     affectedProjects: function(feature) {
-      var stage = feature.properties.Dev_stage;
-      var color = (stage === 'Operation') ? '#FF0000' : '#00FF00';
+      var stage = feature.properties.Dev_stage || feature.properties.Dev_Stage || feature.properties.DEV_STAGE;
+      if (typeof stage !== 'string') stage = '';
+      stage = stage.trim().toLowerCase();
+      var color = (stage === 'operation') ? '#FF0000' : '#00FF00';
       return { color: color, weight: 2.5, fill: false };
     }
   };
