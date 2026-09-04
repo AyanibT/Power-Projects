@@ -72,7 +72,7 @@
       top: 70px;
       right: 15px;
       z-index: 1000;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.85);
       padding: 14px 18px;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
@@ -612,12 +612,12 @@
   map.on('moveend zoomend', updateDynamicLabels);
 
   // 10. Load vector layers
-  loadGeoJSON('data/flood_polygon.geojson', styles.floodPolygon, 'floodPolygon', 'label-flood');
-  loadGeoJSON('data/flood_buffer_30m.geojson', styles.floodBuffer, 'floodBuffer', 'label-buffer');
-  loadGeoJSON('data/lake_1.geojson', styles.lake1, 'lake1', 'label-lake', 'lakePane');
-  loadGeoJSON('data/lake_2.geojson', styles.lake2, 'lake2', 'label-lake', 'lakePane');
-  loadGeoJSON('data/glacier.geojson', styles.glacier, 'glacier', 'label-glacier');
-  loadGeoJSON('data/glacier_break.geojson', styles.glacierBreak, 'glacierBreak', 'label-glacier', 'lakePane');
+  loadGeoJSON('data/Flood_Polygon.geojson', styles.floodPolygon, 'floodPolygon', 'label-flood');
+  loadGeoJSON('data/Flood_Buffer_30m.geojson', styles.floodBuffer, 'floodBuffer', 'label-buffer');
+  loadGeoJSON('data/Lake_1.geojson', styles.lake1, 'lake1', 'label-lake', 'lakePane');
+  loadGeoJSON('data/Lake_2.geojson', styles.lake2, 'lake2', 'label-lake', 'lakePane');
+  loadGeoJSON('data/Glacier.geojson', styles.glacier, 'glacier', 'label-glacier');
+  loadGeoJSON('data/Glacier_Break.geojson', styles.glacierBreak, 'glacierBreak', 'label-glacier', 'lakePane');
   // Load affected projects
   loadGeoJSON('data/Affected_Projects.geojson', styles.affectedProjects, 'affectedProjects', 'label-affected');
 
