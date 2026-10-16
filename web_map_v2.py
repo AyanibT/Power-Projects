@@ -168,7 +168,7 @@ footer_html = '''
     border-radius: 5px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 999;">
-    Updated:  October 2, 2026<br>
+    Updated:  October 15, 2026<br>
     Made by: <a href="https://binayabasnet.com.np/" target="_blank" style="color: #0073b1; text-decoration: none;">
         Er. Binaya Basnet
     </a>
